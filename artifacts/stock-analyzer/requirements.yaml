@@ -1,0 +1,13 @@
+packages:
+  "recharts": "Required for interactive candlestick and line price charts"
+  "framer-motion": "Required for dashboard loading animations and gauge meters"
+  "date-fns": "Required for formatting time series data on charts"
+  "clsx": "Utility for constructing CSS class strings conditionally"
+  "tailwind-merge": "Utility for merging Tailwind CSS classes safely"
+  "lucide-react": "Required for beautiful, consistent iconography across the terminal"
+
+images: []
+
+notes:
+  - "Assuming React Query hooks are exported from @workspace/api-client-react"
+  - "Theme heavily relies on CSS variables customized in index.css to create the 'Bloomberg Terminal' dark mode aesthetic"

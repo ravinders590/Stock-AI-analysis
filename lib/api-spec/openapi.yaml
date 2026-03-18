@@ -1,0 +1,562 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Stock Market Analysis API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: stocks
+    description: Stock market data and analysis
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /stocks/quote:
+    get:
+      operationId: getStockQuote
+      tags: [stocks]
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Stock quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockQuote"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /stocks/history:
+    get:
+      operationId: getStockHistory
+      tags: [stocks]
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [1mo, 3mo, 6mo, 1y, 2y, 5y]
+            default: 3mo
+      responses:
+        "200":
+          description: Historical price data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockHistory"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /stocks/analysis:
+    get:
+      operationId: getStockAnalysis
+      tags: [stocks]
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [1mo, 3mo, 6mo, 1y, 2y, 5y]
+            default: 3mo
+      responses:
+        "200":
+          description: Technical analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockAnalysis"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /stocks/search:
+    get:
+      operationId: searchStocks
+      tags: [stocks]
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockSearchResults"
+  /stocks/popular:
+    get:
+      operationId: getPopularStocks
+      tags: [stocks]
+      summary: Get curated list of popular Indian stocks
+      responses:
+        "200":
+          description: Popular stocks list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PopularStockList"
+  /stocks/fundamentals:
+    get:
+      operationId: getStockFundamentals
+      tags: [stocks]
+      summary: Get company fundamentals and pros/cons
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Company fundamentals
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockFundamentals"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /stocks/financials:
+    get:
+      operationId: getStockFinancials
+      tags: [stocks]
+      summary: Get annual financial history for charting
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Annual financials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockFinancials"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required: [error, message]
+    StockQuote:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        change:
+          type: number
+        changePercent:
+          type: number
+        open:
+          type: number
+        high:
+          type: number
+        low:
+          type: number
+        volume:
+          type: number
+        marketCap:
+          type: number
+        previousClose:
+          type: number
+        currency:
+          type: string
+        exchange:
+          type: string
+        updatedAt:
+          type: string
+      required: [symbol, name, price, change, changePercent, currency, updatedAt]
+    OHLCVData:
+      type: object
+      properties:
+        date:
+          type: string
+        open:
+          type: number
+        high:
+          type: number
+        low:
+          type: number
+        close:
+          type: number
+        volume:
+          type: number
+      required: [date, open, high, low, close, volume]
+    StockHistory:
+      type: object
+      properties:
+        symbol:
+          type: string
+        period:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/OHLCVData"
+      required: [symbol, period, data]
+    TechnicalIndicators:
+      type: object
+      properties:
+        sma20:
+          type: number
+          nullable: true
+        sma50:
+          type: number
+          nullable: true
+        sma200:
+          type: number
+          nullable: true
+        ema12:
+          type: number
+          nullable: true
+        ema26:
+          type: number
+          nullable: true
+        rsi:
+          type: number
+          nullable: true
+        macd:
+          type: number
+          nullable: true
+        macdSignal:
+          type: number
+          nullable: true
+        macdHistogram:
+          type: number
+          nullable: true
+        bollingerUpper:
+          type: number
+          nullable: true
+        bollingerMiddle:
+          type: number
+          nullable: true
+        bollingerLower:
+          type: number
+          nullable: true
+        stochasticK:
+          type: number
+          nullable: true
+        stochasticD:
+          type: number
+          nullable: true
+        atr:
+          type: number
+          nullable: true
+        support:
+          type: number
+          nullable: true
+        resistance:
+          type: number
+          nullable: true
+      required: []
+    SignalDetail:
+      type: object
+      properties:
+        name:
+          type: string
+        signal:
+          type: string
+          enum: [BUY, SELL, NEUTRAL]
+        value:
+          type: string
+        description:
+          type: string
+      required: [name, signal, value, description]
+    TradingRecommendation:
+      type: object
+      properties:
+        action:
+          type: string
+          enum: [BUY, SELL, HOLD]
+        entryPrice:
+          type: number
+        stopLoss:
+          type: number
+        target1:
+          type: number
+        target2:
+          type: number
+        target3:
+          type: number
+        riskRewardRatio:
+          type: number
+        holdingPeriod:
+          type: string
+        positionAdvice:
+          type: string
+        stopLossPct:
+          type: number
+        target1Pct:
+          type: number
+        target2Pct:
+          type: number
+        target3Pct:
+          type: number
+        maxProfitPotential:
+          type: number
+        riskAmount:
+          type: number
+      required: [action, entryPrice, stopLoss, target1, target2, target3, riskRewardRatio, holdingPeriod, positionAdvice, stopLossPct, target1Pct, target2Pct, target3Pct, maxProfitPotential, riskAmount]
+    StockAnalysis:
+      type: object
+      properties:
+        symbol:
+          type: string
+        currentPrice:
+          type: number
+        overallSignal:
+          type: string
+          enum: [STRONG_BUY, BUY, HOLD, SELL, STRONG_SELL]
+        signalStrength:
+          type: number
+        summary:
+          type: string
+        indicators:
+          $ref: "#/components/schemas/TechnicalIndicators"
+        signals:
+          type: array
+          items:
+            $ref: "#/components/schemas/SignalDetail"
+        trading:
+          $ref: "#/components/schemas/TradingRecommendation"
+        period:
+          type: string
+        analyzedAt:
+          type: string
+      required: [symbol, currentPrice, overallSignal, signalStrength, summary, indicators, signals, trading, period, analyzedAt]
+    StockSearchResult:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        exchange:
+          type: string
+        type:
+          type: string
+        sector:
+          type: string
+          nullable: true
+      required: [symbol, name, exchange, type]
+    StockSearchResults:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/StockSearchResult"
+        query:
+          type: string
+      required: [results, query]
+    PopularStock:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        sector:
+          type: string
+        category:
+          type: string
+      required: [symbol, name, sector, category]
+    PopularStockList:
+      type: object
+      properties:
+        stocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/PopularStock"
+      required: [stocks]
+    ProConItem:
+      type: object
+      properties:
+        point:
+          type: string
+        detail:
+          type: string
+      required: [point, detail]
+    StockFundamentals:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        sector:
+          type: string
+          nullable: true
+        industry:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        employees:
+          type: number
+          nullable: true
+        marketCap:
+          type: number
+          nullable: true
+        peRatio:
+          type: number
+          nullable: true
+        pbRatio:
+          type: number
+          nullable: true
+        eps:
+          type: number
+          nullable: true
+        dividendYield:
+          type: number
+          nullable: true
+        roe:
+          type: number
+          nullable: true
+        roce:
+          type: number
+          nullable: true
+        debtToEquity:
+          type: number
+          nullable: true
+        currentRatio:
+          type: number
+          nullable: true
+        revenueGrowthYoY:
+          type: number
+          nullable: true
+        profitMargin:
+          type: number
+          nullable: true
+        operatingMargin:
+          type: number
+          nullable: true
+        revenue:
+          type: number
+          nullable: true
+        netIncome:
+          type: number
+          nullable: true
+        bookValue:
+          type: number
+          nullable: true
+        fiftyTwoWeekHigh:
+          type: number
+          nullable: true
+        fiftyTwoWeekLow:
+          type: number
+          nullable: true
+        pros:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProConItem"
+        cons:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProConItem"
+        currency:
+          type: string
+      required: [symbol, name, pros, cons, currency]
+    AnnualFinancial:
+      type: object
+      properties:
+        year:
+          type: string
+        revenue:
+          type: number
+          nullable: true
+        netIncome:
+          type: number
+          nullable: true
+        eps:
+          type: number
+          nullable: true
+        operatingIncome:
+          type: number
+          nullable: true
+        grossProfit:
+          type: number
+          nullable: true
+      required: [year]
+    StockFinancials:
+      type: object
+      properties:
+        symbol:
+          type: string
+        currency:
+          type: string
+        annualData:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnnualFinancial"
+      required: [symbol, currency, annualData]
