@@ -30,7 +30,6 @@ export function TopNav({ currentSymbol, onSelectSymbol }: TopNavProps) {
   );
 
   const { data: popularData } = useGetPopularStocks(
-    {},
     { query: { enabled: isFocused && !isSearching } }
   );
 
@@ -76,7 +75,7 @@ export function TopNav({ currentSymbol, onSelectSymbol }: TopNavProps) {
   const showDropdown = isFocused && (isSearching || true);
 
   // Group popular stocks by category
-  const grouped = popularData?.stocks.reduce((acc: Record<string, typeof popularData.stocks>, s) => {
+  const grouped = popularData?.stocks?.reduce((acc: Record<string, typeof popularData.stocks>, s) => {
     if (!acc[s.category]) acc[s.category] = [];
     acc[s.category].push(s);
     return acc;

@@ -34,7 +34,7 @@ function LevelRow({
           "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded",
           pct >= 0 ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"
         )}>
-          {pct >= 0 ? "+" : ""}{pct.toFixed(2)}%
+          {pct >= 0 ? "+" : ""}{(pct ?? 0).toFixed(2)}%
         </span>
       </div>
     </div>
@@ -175,7 +175,7 @@ export function TradingPanel({ symbol, period }: TradingPanelProps) {
               "font-mono font-bold text-lg",
               t.riskRewardRatio >= 2 ? "text-success" : t.riskRewardRatio >= 1 ? "text-warning" : "text-destructive"
             )}>
-              1 : {t.riskRewardRatio.toFixed(2)}
+              1 : {(t.riskRewardRatio ?? 0).toFixed(2)}
             </div>
           </div>
           <div className="bg-secondary/50 border border-border rounded-lg p-3">

@@ -35,7 +35,7 @@ export function QuoteHeader({ symbol }: { symbol: string }) {
     );
   }
 
-  const isPositive = quote.change >= 0;
+  const isPositive = (quote.change ?? 0) >= 0;
   const cur = quote.currency;
 
   return (
@@ -86,7 +86,7 @@ export function QuoteHeader({ symbol }: { symbol: string }) {
             <Clock className="w-3 h-3" /> 1D Return
           </div>
           <span className="text-2xl font-mono font-black leading-none">
-            {isPositive ? "+" : ""}{quote.changePercent.toFixed(2)}%
+            {isPositive ? "+" : ""}{(quote.changePercent ?? 0).toFixed(2)}%
           </span>
           <span className="text-xs font-mono mt-0.5 opacity-80">
             {isPositive ? "+" : ""}{formatCurrency(quote.change, cur)}
